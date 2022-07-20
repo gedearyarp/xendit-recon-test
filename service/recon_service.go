@@ -46,13 +46,13 @@ func MapProxies(proxies []m.Proxy) map[string]m.Proxy {
 func (recon *ReconData) Compare() []m.ReconResult {
 	var result []m.ReconResult
 
-	result = recon.ProxyToSource()
-	result = append(result, recon.SourceToProxy()...)
+	result = recon.CompareProxyToSource()
+	result = append(result, recon.CompareSourceToProxy()...)
 
 	return result
 }
 
-func (recon *ReconData) ProxyToSource() []m.ReconResult {
+func (recon *ReconData) CompareProxyToSource() []m.ReconResult {
 	var result []m.ReconResult
 
 	for key, value := range recon.ProxyMap {
@@ -74,7 +74,7 @@ func (recon *ReconData) ProxyToSource() []m.ReconResult {
 	return result
 }
 
-func (recon *ReconData) SourceToProxy() []m.ReconResult {
+func (recon *ReconData) CompareSourceToProxy() []m.ReconResult {
 	var result []m.ReconResult
 
 	for key, value := range recon.SourceMap {
