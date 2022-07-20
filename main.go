@@ -8,17 +8,23 @@ import (
 
 func main() {
 	var (
-		sources []m.Source
-		proxies []m.Proxy
+		sourceCsv    svc.CsvService
+		proxyCsv     svc.CsvService
+		reconService svc.ReconService
+
+		sources      []m.Source
+		proxies      []m.Proxy
+		reconResults []m.ReconResult
 	)
 
-	sourceCsv := svc.CsvService{FileName: "file/source.csv"}
-	proxyCsv := svc.CsvService{FileName: "file/proxy.csv"}
+	sourceCsv = svc.CsvService{FileName: "file/source.csv"}
+	proxyCsv = svc.CsvService{FileName: "file/proxy.csv"}
 
 	sources = sourceCsv.ReadSource()
 	proxies = proxyCsv.ReadProxy()
 
-	fmt.Println(sources)
-	fmt.Println(proxies)
+	reconService = svc.ReconService{Sources: sources, Proxies: proxies}
+	reconResults = reconService.Compare()
 
+	fmt.Println(reconService)
 }
