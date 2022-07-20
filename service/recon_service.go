@@ -1,9 +1,16 @@
 package service
 
 import (
-	"fmt"
+	m "recon_test/model"
 )
 
-func Rectest() {
-	fmt.Println("asdjjasd")
+type ReconService struct {
+	Sources []m.Source
+	Proxies []m.Proxy
+}
+
+func (svc *ReconService) Compare() []m.ReconResult {
+	var result []m.ReconResult
+
+	return result
 }

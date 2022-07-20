@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"io/ioutil"
 	m "recon_test/model"
 
@@ -21,7 +20,21 @@ func (svc *CsvService) ReadProxy() []m.Proxy {
 	var proxies []m.Proxy
 	_ = gocsv.UnmarshalBytes(bytes, &proxies)
 
-	fmt.Println(svc.FileName)
-	
 	return proxies
+}
+
+func (svc *CsvService) ReadSource() []m.Source {
+	bytes, err := ioutil.ReadFile(svc.FileName)
+	if err != nil {
+		panic(err)
+	}
+
+	var sources []m.Source
+	_ = gocsv.UnmarshalBytes(bytes, &sources)
+
+	return sources
+}
+
+func (svc *CsvService) WriteResultRecon() {
+
 }
