@@ -46,88 +46,63 @@ func MapProxies(proxies []m.Proxy) map[string]m.Proxy {
 func (recon *ReconData) Compare() []m.ReconResult {
 	var result []m.ReconResult
 
-	proxyToSourceRecon := recon.ProxyToSource()
-	result = append(result, proxyToSourceRecon...)
-
-	sourceToProxyRecon := recon.SourceToProxy()
-	result = append(result, sourceToProxyRecon...)
+	result = recon.ProxyToSource()
+	result = append(result, recon.SourceToProxy()...)
 
 	return result
 }
 
 func (recon *ReconData) ProxyToSource() []m.ReconResult {
-	var (
-		result    []m.ReconResult
-		reconData m.ReconResult
-	)
+	var result []m.ReconResult
 
 	for key, value := range recon.ProxyMap {
 		source, ok := recon.SourceMap[key]
 		if !ok {
-			reconData = m.ReconResult{
-				ID:          value.ID,
-				Amount:      value.Amount,
-				Description: value.Description,
-				Date:        value.Date,
-				Remark:      m.SOURCE_NOT_FOUND,
-			}
-			result = append(result, reconData)
-		} else {
-			if value.Amount != source.Amount {
-				reconData = m.ReconResult{
-					ID:          value.ID,
-					Amount:      value.Amount,
-					Description: value.Description,
-					Date:        value.Date,
-					Remark:      m.AMOUNT_DIFF,
-				}
-				result = append(result, reconData)
-			}
-
-			if value.Date != source.Date {
-				reconData = m.ReconResult{
-					ID:          value.ID,
-					Amount:      value.Amount,
-					Description: value.Description,
-					Date:        value.Date,
-					Remark:      m.DATE_DIFF,
-				}
-				result = append(result, reconData)
-			}
-
-			if value.Description != source.Description {
-				reconData = m.ReconResult{
-					ID:          value.ID,
-					Amount:      value.Amount,
-					Description: value.Description,
-					Date:        value.Date,
-					Remark:      m.DATE_DIFF,
-				}
-				result = append(result, reconData)
-			}
+			result = append(result, RemarkProxy(value, m.SOURCE_NOT_FOUND))
+		}
+		if ok && value.Amount != source.Amount {
+			result = append(result, RemarkProxy(value, m.AMOUNT_DIFF))
+		}
+		if ok && value.Date != source.Date {
+			result = append(result, RemarkProxy(value, m.DATE_DIFF))
+		}
+		if ok && value.Description != source.Description {
+			result = append(result, RemarkProxy(value, m.DESCR_DIFF))
 		}
 	}
+
 	return result
 }
 
 func (recon *ReconData) SourceToProxy() []m.ReconResult {
-	var (
-		result    []m.ReconResult
-		reconData m.ReconResult
-	)
+	var result []m.ReconResult
 
 	for key, value := range recon.SourceMap {
 		_, ok := recon.ProxyMap[key]
 		if !ok {
-			reconData = m.ReconResult{
-				ID:          value.ID,
-				Amount:      value.Amount,
-				Description: value.Description,
-				Date:        value.Date,
-				Remark:      m.PROXY_NOT_FOUND,
-			}
-			result = append(result, reconData)
+			result = append(result, RemarkSource(value, m.PROXY_NOT_FOUND))
 		}
 	}
+
 	return result
+}
+
+func RemarkSource(source m.Source, remark string) m.ReconResult {
+	return m.ReconResult{
+		ID:          source.ID,
+		Amount:      source.Amount,
+		Description: source.Description,
+		Date:        source.Date,
+		Remark:      remark,
+	}
+}
+
+func RemarkProxy(proxy m.Proxy, remark string) m.ReconResult {
+	return m.ReconResult{
+		ID:          proxy.ID,
+		Amount:      proxy.Amount,
+		Description: proxy.Description,
+		Date:        proxy.Date,
+		Remark:      remark,
+	}
 }
