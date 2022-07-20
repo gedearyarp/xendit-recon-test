@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	m "recon_test/model"
 	svc "recon_test/service"
 )
@@ -19,8 +18,9 @@ func main() {
 	sources = sourceCsv.ReadSource()
 	proxies = proxyCsv.ReadProxy()
 
-	reconService:= svc.ReconService{Sources: sources, Proxies: proxies}
+	reconService := svc.ReconService{Sources: sources, Proxies: proxies}
 	reconResults = reconService.Perform()
 
-	fmt.Println(reconResults)
+	reconResultCsv := svc.CsvService{FileName: "reconciliation.csv"}
+	reconResultCsv.WriteResultRecon(reconResults)
 }

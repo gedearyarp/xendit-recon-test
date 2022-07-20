@@ -2,6 +2,7 @@ package service
 
 import (
 	"io/ioutil"
+	"os"
 	m "recon_test/model"
 
 	"github.com/gocarina/gocsv"
@@ -35,6 +36,7 @@ func (svc *CsvService) ReadSource() []m.Source {
 	return sources
 }
 
-func (svc *CsvService) WriteResultRecon() {
-
+func (svc *CsvService) WriteResultRecon(reconResults []m.ReconResult) {
+	file, _ := os.Create(svc.FileName)
+	gocsv.MarshalFile(&reconResults, file)
 }
