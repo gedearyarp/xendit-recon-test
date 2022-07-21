@@ -19,15 +19,27 @@ func TestCsvService_ReadProxySuccess(t *testing.T) {
 		},
 		{
 			ID:          "bbbb",
-			Amount:      100,
+			Amount:      101,
 			Description: "B",
 			Date:        "2021-06-30",
 		},
 		{
 			ID:          "cccc",
-			Amount:      1000,
+			Amount:      70,
 			Description: "C",
-			Date:        "2021-07-01",
+			Date:        "2021-07-02",
+		},
+		{
+			ID:          "dddd",
+			Amount:      89,
+			Description: "DD",
+			Date:        "2021-08-03",
+		},
+		{
+			ID:          "ffff",
+			Amount:      24,
+			Description: "F",
+			Date:        "2021-09-03",
 		},
 	}
 	proxyCsv := svc.CsvService{FileName: "file/proxy_test.csv"}
@@ -61,22 +73,35 @@ func TestCsvService_ReadSourceSuccess(t *testing.T) {
 		},
 		{
 			ID:          "cccc",
-			Amount:      1000,
+			Amount:      70,
 			Description: "C",
 			Date:        "2021-07-01",
 		},
 		{
-			ID:          "cccc",
-			Amount:      1000,
-			Description: "C",
-			Date:        "2021-07-01",
+			ID:          "dddd",
+			Amount:      89,
+			Description: "D",
+			Date:        "2021-08-03",
 		},
 		{
-			ID:          "cccc",
-			Amount:      1000,
-			Description: "C",
-			Date:        "2021-07-01",
+			ID:          "eeee",
+			Amount:      71,
+			Description: "E",
+			Date:        "2021-09-03",
 		},
 	}
 
+	sourceCsv := svc.CsvService{FileName: "file/source_test.csv"}
+	result, err := sourceCsv.ReadSource()
+
+	assert.Nil(t, err, "Error must be nil")
+	assert.NotNil(t, result, "Result must be not nil")
+	assert.Equal(t, result, source, "Result must be equal to proxy data")
+}
+
+func TestCsvService_ReadSourceFail(t *testing.T) {
+	proxyCsv := svc.CsvService{FileName: "file/source_test123.csv"}
+	_, err := proxyCsv.ReadProxy()
+
+	assert.NotNil(t, err, "source_test123.csv must be not found")
 }
