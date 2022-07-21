@@ -12,28 +12,28 @@ type CsvService struct {
 	FileName string
 }
 
-func (svc *CsvService) ReadProxy() []m.Proxy {
+func (svc *CsvService) ReadProxy() ([]m.Proxy, error) {
 	bytes, err := ioutil.ReadFile(svc.FileName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var proxies []m.Proxy
 	_ = gocsv.UnmarshalBytes(bytes, &proxies)
 
-	return proxies
+	return proxies, nil
 }
 
-func (svc *CsvService) ReadSource() []m.Source {
+func (svc *CsvService) ReadSource() ([]m.Source, error) {
 	bytes, err := ioutil.ReadFile(svc.FileName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var sources []m.Source
 	_ = gocsv.UnmarshalBytes(bytes, &sources)
 
-	return sources
+	return sources, nil
 }
 
 func (svc *CsvService) WriteResultRecon(reconResults []m.ReconResult) {

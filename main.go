@@ -12,11 +12,17 @@ func main() {
 		reconResults []m.ReconResult
 	)
 
-	sourceCsv := svc.CsvService{FileName: "file/source.csv"}
+	sourceCsv := svc.CsvService{FileName: "file/sourcewe.csv"}
 	proxyCsv := svc.CsvService{FileName: "file/proxy.csv"}
 
-	sources = sourceCsv.ReadSource()
-	proxies = proxyCsv.ReadProxy()
+	sources, err := sourceCsv.ReadSource()
+	if err != nil {
+		panic(err)
+	}
+	proxies, err = proxyCsv.ReadProxy()
+	if err != nil {
+		panic(err)
+	}
 
 	reconService := svc.ReconService{Sources: sources, Proxies: proxies}
 	reconResults = reconService.Perform()
