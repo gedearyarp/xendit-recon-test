@@ -5,7 +5,10 @@
 - Run unit test     : `go test -v ./...`
 
 ## Demo
+### Run main program
 ![recon run demo](https://user-images.githubusercontent.com/71829426/180240425-bd2a3c8a-88bc-4b50-8abd-52a78c91db29.gif)
+### Run unit test
+![recon test demo](https://user-images.githubusercontent.com/71829426/180241701-abcd0e4d-215a-4b1e-8b72-fdf97346eceb.gif)
 
 
 ## Folder structure
