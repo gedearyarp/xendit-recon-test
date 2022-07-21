@@ -4,6 +4,10 @@
 - Run main program  : `go run main.go` and check the `reconciliation.csv` at folder `./file`
 - Run unit test     : `go test -v ./...`
 
+## Demo
+![recon run demo](https://user-images.githubusercontent.com/71829426/180240425-bd2a3c8a-88bc-4b50-8abd-52a78c91db29.gif)
+
+
 ## Folder structure
 ```.
 ├── README.md
