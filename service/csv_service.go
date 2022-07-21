@@ -36,7 +36,11 @@ func (svc *CsvService) ReadSource() ([]m.Source, error) {
 	return sources, nil
 }
 
-func (svc *CsvService) WriteResultRecon(reconResults []m.ReconResult) {
-	file, _ := os.Create(svc.FileName)
+func (svc *CsvService) WriteResultRecon(reconResults []m.ReconResult) (bool, error) {
+	file, err := os.Create(svc.FileName)
+	if err != nil {
+		return false, err
+	}
 	gocsv.MarshalFile(&reconResults, file)
+	return true, nil
 }

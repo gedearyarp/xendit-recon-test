@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	m "recon_test/model"
 	svc "recon_test/service"
 )
@@ -12,7 +13,7 @@ func main() {
 		reconResults []m.ReconResult
 	)
 
-	sourceCsv := svc.CsvService{FileName: "file/sourcewe.csv"}
+	sourceCsv := svc.CsvService{FileName: "file/source.csv"}
 	proxyCsv := svc.CsvService{FileName: "file/proxy.csv"}
 
 	sources, err := sourceCsv.ReadSource()
@@ -27,6 +28,11 @@ func main() {
 	reconService := svc.ReconService{Sources: sources, Proxies: proxies}
 	reconResults = reconService.Perform()
 
-	reconResultCsv := svc.CsvService{FileName: "reconciliation.csv"}
-	reconResultCsv.WriteResultRecon(reconResults)
+	reconResultCsv := svc.CsvService{FileName: "file/reconciliation.csv"}
+	_, err = reconResultCsv.WriteResultRecon(reconResults)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Reconciliation Success, please check at ./file/reconciliation")
 }

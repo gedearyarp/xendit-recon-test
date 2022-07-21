@@ -56,18 +56,23 @@ func (recon *ReconData) CompareProxyToSource() []m.ReconResult {
 	var result []m.ReconResult
 
 	for key, value := range recon.ProxyMap {
+		var remarks string
 		source, ok := recon.SourceMap[key]
 		if !ok {
-			result = append(result, RemarkProxy(value, m.SOURCE_NOT_FOUND))
+			remarks = AppendRemark(remarks, m.SOURCE_NOT_FOUND)
 		}
 		if ok && value.Amount != source.Amount {
-			result = append(result, RemarkProxy(value, m.AMOUNT_DIFF))
-		}
-		if ok && value.Date != source.Date {
-			result = append(result, RemarkProxy(value, m.DATE_DIFF))
+			remarks = AppendRemark(remarks, m.AMOUNT_DIFF)
 		}
 		if ok && value.Description != source.Description {
-			result = append(result, RemarkProxy(value, m.DESCR_DIFF))
+			remarks = AppendRemark(remarks, m.DESCR_DIFF)
+		}
+		if ok && value.Date != source.Date {
+			remarks = AppendRemark(remarks, m.DATE_DIFF)
+		}
+
+		if remarks != "" {
+			result = append(result, RemarkProxy(value, remarks))
 		}
 	}
 
@@ -105,4 +110,8 @@ func RemarkProxy(proxy m.Proxy, remark string) m.ReconResult {
 		Date:        proxy.Date,
 		Remark:      remark,
 	}
+}
+
+func AppendRemark(remarks string, newRemark string) string {
+	return remarks + newRemark
 }

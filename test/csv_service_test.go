@@ -109,9 +109,45 @@ func TestCsvService_ReadSourceFail(t *testing.T) {
 }
 
 func TestCsvService_WriteResultReconSuccess(t *testing.T) {
+	recons := []m.ReconResult{
+		{
+			ID:          "bbbb",
+			Amount:      101,
+			Description: "B",
+			Date:        "2021-06-30",
+			Remark:      m.AMOUNT_DIFF,
+		},
+		{
+			ID:          "cccc",
+			Amount:      70,
+			Description: "C",
+			Date:        "2021-07-02",
+			Remark:      m.DATE_DIFF,
+		},
+		{
+			ID:          "dddd",
+			Amount:      89,
+			Description: "DD",
+			Date:        "2021-08-03",
+			Remark:      m.DESCR_DIFF,
+		},
+		{
+			ID:          "ffff",
+			Amount:      24,
+			Description: "F",
+			Date:        "2021-09-03",
+			Remark:      m.SOURCE_NOT_FOUND,
+		},
+		{
+			ID:          "eeee",
+			Amount:      71,
+			Description: "E",
+			Date:        "2021-09-03",
+			Remark:      m.PROXY_NOT_FOUND,
+		},
+	}
 
-}
-
-func TestCsvService_WriteResultReconFail(t *testing.T) {
-
+	reconCsv := svc.CsvService{FileName: "file/reconciliation_test.csv"}
+	_, err := reconCsv.WriteResultRecon(recons)
+	assert.Nil(t, err)
 }
