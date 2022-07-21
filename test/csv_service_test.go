@@ -52,9 +52,10 @@ func TestCsvService_ReadProxySuccess(t *testing.T) {
 
 func TestCsvService_ReadProxyFail(t *testing.T) {
 	proxyCsv := svc.CsvService{FileName: "file/proxy_test123.csv"}
-	_, err := proxyCsv.ReadProxy()
+	proxy, err := proxyCsv.ReadProxy()
 
 	assert.NotNil(t, err, "proxy_test123.csv must be not found")
+	assert.Nil(t, proxy, "Source must be nil")
 }
 
 func TestCsvService_ReadSourceSuccess(t *testing.T) {
@@ -100,8 +101,17 @@ func TestCsvService_ReadSourceSuccess(t *testing.T) {
 }
 
 func TestCsvService_ReadSourceFail(t *testing.T) {
-	proxyCsv := svc.CsvService{FileName: "file/source_test123.csv"}
-	_, err := proxyCsv.ReadProxy()
+	sourceCsv := svc.CsvService{FileName: "file/source_test123.csv"}
+	source, err := sourceCsv.ReadProxy()
 
 	assert.NotNil(t, err, "source_test123.csv must be not found")
+	assert.Nil(t, source, "Source must be nil")
+}
+
+func TestCsvService_WriteResultReconSuccess(t *testing.T) {
+
+}
+
+func TestCsvService_WriteResultReconFail(t *testing.T) {
+
 }
