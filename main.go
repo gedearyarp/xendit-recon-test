@@ -1,38 +1,32 @@
 package main
 
 import (
-	"fmt"
-	m "recon_test/model"
-	svc "recon_test/service"
+	"log"
+
+	"recon_test/interface/controller"
+	"recon_test/interface/repository"
+	"recon_test/usecase"
 )
 
+const (
+	proxyFileName          = "file/proxy.csv"
+	sourceFileName         = "file/source.csv"
+	reconciliationFileName = "file/reconciliation.csv"
+)
+
+func getReconciliationController() controller.ReconciliationController {
+	transactionRepo := repository.NewTransactionRepository()
+	reconciliationRepo := repository.NewReconciliationRepository()
+	reconciliationInteractor := usecase.NewReconciliationInteractor(reconciliationRepo, transactionRepo)
+	reconciliationController := controller.NewReconciliationController(reconciliationInteractor)
+	return *reconciliationController
+}
+
 func main() {
-	var (
-		sources      []m.Source
-		proxies      []m.Proxy
-		reconResults []m.ReconResult
-	)
+	reconciliationController := getReconciliationController()
 
-	sourceCsv := svc.CsvService{FileName: "file/source.csv"}
-	proxyCsv := svc.CsvService{FileName: "file/proxy.csv"}
-
-	sources, err := sourceCsv.ReadSource()
+	err := reconciliationController.ReconcilTransaction(proxyFileName, sourceFileName, reconciliationFileName)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	proxies, err = proxyCsv.ReadProxy()
-	if err != nil {
-		panic(err)
-	}
-
-	reconService := svc.ReconService{Sources: sources, Proxies: proxies}
-	reconResults = reconService.Perform()
-
-	reconResultCsv := svc.CsvService{FileName: "file/reconciliation.csv"}
-	_, err = reconResultCsv.WriteResultRecon(reconResults)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Reconciliation Success, please check at ./file/reconciliation")
 }
