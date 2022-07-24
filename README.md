@@ -1,4 +1,4 @@
-# Coding Technical Assessment: Data Reconciliation
+# Xendit Data Reconciliation
 
 ## How to use?
 - Run main program  : `go run main.go` and check the `reconciliation.csv` at folder `./file/reconciliation`
