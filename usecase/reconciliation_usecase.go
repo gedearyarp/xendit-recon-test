@@ -1,6 +1,9 @@
 package usecase
 
 import (
+	"sort"
+	t "time"
+
 	"github.com/gedearyarp/xendit-reconciliation/domain"
 )
 
@@ -17,14 +20,14 @@ func NewReconciliationInteractor(reconciliationRepository domain.ReconciliationR
 }
 
 const (
-	PROXY_NOT_FOUND  = "Data not found in Proxy (Only occured in Source);"
-	SOURCE_NOT_FOUND = "Data not found in Source (Only occured in Proxy);"
-	AMOUNT_DIFF      = "Amount between Proxy and Source is different;"
-	DATE_DIFF        = "Date between Proxy and Source is different;"
-	DESCR_DIFF       = "Description between Proxy and Source is different;"
+	SOURCE_NOT_FOUND  = "Transaction not found in Source (Only occured in Proxy);"
+	AMOUNT_DIFF       = "Amount between Proxy and Source is different;"
+	DATE_DIFF         = "Date between Proxy and Source is different;"
+	DESCR_DIFF        = "Description between Proxy and Source is different;"
+	DATE_OUT_OF_RANGE = "Transaction's date is out of range;"
 )
 
-func (interactor *ReconciliationInteractor) ReconcilTransaction(proxyFileName string, sourceFileName string, reconciliationFileName string) error {
+func (interactor *ReconciliationInteractor) ReconcileTransaction(proxyFileName string, sourceFileName string, reconciliationFileName string, startDate t.Time, endDate t.Time) error {
 	proxies, err := interactor.transactionRepository.ReadTransaction(proxyFileName)
 	if err != nil {
 		return err
@@ -37,7 +40,12 @@ func (interactor *ReconciliationInteractor) ReconcilTransaction(proxyFileName st
 	mapProxies := interactor.mapTransactionById(proxies)
 	mapSources := interactor.mapTransactionById(sources)
 
-	reconciliations := interactor.compare(mapProxies, mapSources)
+	reconciliations, err := interactor.compareTransaction(mapProxies, mapSources, startDate, endDate)
+	if err != nil {
+		return err
+	}
+
+	reconciliations = interactor.sortReconciliationByDate(reconciliations)
 
 	err = interactor.reconciliationRepository.WriteReconciliation(reconciliationFileName, reconciliations)
 	if err != nil {
@@ -57,56 +65,60 @@ func (interactor *ReconciliationInteractor) mapTransactionById(transactions []do
 	return mapTransactions
 }
 
-func (interactor *ReconciliationInteractor) compare(mapProxies map[string]domain.Transaction, mapSources map[string]domain.Transaction) []domain.Reconciliation {
-	var result []domain.Reconciliation
-
-	result = interactor.compareProxyToSource(mapProxies, mapSources)
-	result = append(result, interactor.compareSourceToProxy(mapProxies, mapSources)...)
-
-	return result
-}
-
-func (interactor *ReconciliationInteractor) compareProxyToSource(mapProxies map[string]domain.Transaction, mapSources map[string]domain.Transaction) []domain.Reconciliation {
+func (interactor *ReconciliationInteractor) compareTransaction(mapProxies map[string]domain.Transaction, mapSources map[string]domain.Transaction, startDate t.Time, endDate t.Time) ([]domain.Reconciliation, error) {
 	var result []domain.Reconciliation
 
 	for id, proxy := range mapProxies {
 		var remarks string
+
+		remarks, err := interactor.remarkDateOutOfRange(remarks, proxy.Date, startDate, endDate)
+		if err != nil {
+			return nil, err
+		}
+
 		source, ok := mapSources[id]
 		if !ok {
-			remarks = interactor.appendRemark(remarks, SOURCE_NOT_FOUND)
-		}
-		if ok && proxy.Amount != source.Amount {
-			remarks = interactor.appendRemark(remarks, AMOUNT_DIFF)
-		}
-		if ok && proxy.Description != source.Description {
-			remarks = interactor.appendRemark(remarks, DESCR_DIFF)
-		}
-		if ok && proxy.Date != source.Date {
-			remarks = interactor.appendRemark(remarks, DATE_DIFF)
+			remarks = interactor.remarkSourceNotFound(remarks)
+		} else {
+			remarks = interactor.remarkDifferentField(remarks, proxy, source)
 		}
 
-		if remarks != "" {
-			result = append(result, interactor.remarkTransaction(proxy, remarks))
-		}
+		result = append(result, interactor.generateReconciliation(proxy, remarks))
 	}
 
-	return result
+	return result, nil
 }
 
-func (interactor *ReconciliationInteractor) compareSourceToProxy(mapProxies map[string]domain.Transaction, mapSources map[string]domain.Transaction) []domain.Reconciliation {
-	var result []domain.Reconciliation
+func (interactor *ReconciliationInteractor) remarkSourceNotFound(currentRemark string) string {
+	return currentRemark + SOURCE_NOT_FOUND
+}
 
-	for id, source := range mapSources {
-		_, ok := mapProxies[id]
-		if !ok {
-			result = append(result, interactor.remarkTransaction(source, PROXY_NOT_FOUND))
-		}
+func (interactor *ReconciliationInteractor) remarkDateOutOfRange(currentRemark string, date string, startDate t.Time, endDate t.Time) (string, error) {
+	parsedDate, err := t.Parse("2006-01-02", date)
+	if err != nil {
+		return currentRemark, err
 	}
 
-	return result
+	if parsedDate.After(endDate) || parsedDate.Before(startDate) {
+		return currentRemark + DATE_OUT_OF_RANGE, nil
+	}
+	return currentRemark, nil
 }
 
-func (interactor *ReconciliationInteractor) remarkTransaction(source domain.Transaction, remark string) domain.Reconciliation {
+func (interactor *ReconciliationInteractor) remarkDifferentField(currentRemark string, proxy domain.Transaction, source domain.Transaction) string {
+	if proxy.Amount != source.Amount {
+		currentRemark = currentRemark + AMOUNT_DIFF
+	}
+	if proxy.Description != source.Description {
+		currentRemark = currentRemark + DESCR_DIFF
+	}
+	if proxy.Date != source.Date {
+		currentRemark = currentRemark + DATE_DIFF
+	}
+	return currentRemark
+}
+
+func (interactor *ReconciliationInteractor) generateReconciliation(source domain.Transaction, remark string) domain.Reconciliation {
 	return domain.Reconciliation{
 		ID:          source.ID,
 		Amount:      source.Amount,
@@ -116,6 +128,9 @@ func (interactor *ReconciliationInteractor) remarkTransaction(source domain.Tran
 	}
 }
 
-func (interactor *ReconciliationInteractor) appendRemark(remarks string, newRemark string) string {
-	return remarks + newRemark
+func (interactor *ReconciliationInteractor) sortReconciliationByDate(reconciliations []domain.Reconciliation) []domain.Reconciliation {
+	sort.Slice(reconciliations, func(i int, j int) bool {
+		return reconciliations[i].Date < reconciliations[j].Date
+	})
+	return reconciliations
 }

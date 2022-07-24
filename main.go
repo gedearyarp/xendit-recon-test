@@ -14,6 +14,11 @@ const (
 	reconciliationFileName = "file/reconciliation/reconciliation.csv"
 )
 
+const (
+	startDate = "2021-07-01"
+	endDate   = "2021-07-31"
+)
+
 func getReconciliationController() controller.ReconciliationController {
 	transactionRepo := repository.NewTransactionRepository()
 	reconciliationRepo := repository.NewReconciliationRepository()
@@ -25,7 +30,7 @@ func getReconciliationController() controller.ReconciliationController {
 func main() {
 	reconciliationController := getReconciliationController()
 
-	err := reconciliationController.ReconcilTransaction(proxyFileName, sourceFileName, reconciliationFileName)
+	err := reconciliationController.ReconcileTransaction(proxyFileName, sourceFileName, reconciliationFileName, startDate, endDate)
 	if err != nil {
 		log.Fatal(err)
 	}

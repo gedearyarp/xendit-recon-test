@@ -1,4 +1,11 @@
 ID,Amount,Description,Date,Remark
-zoml,65,G,2021-07-31,Amount between Proxy and Source is different;
-zodo,30,D,2021-07-03,Data not found in Source (Only occured in Proxy);
+zoUr,24,A,2021-06-30,Transaction's date is out of range;
+zoXq,11,B,2021-06-30,Transaction's date is out of range;
+zoap,69,C,2021-07-01,
+zodo,30,D,2021-07-03,Transaction not found in Source (Only occured in Proxy);
+zogn,86,E,2021-07-04,
+zopk,66,H,2021-07-06,
 zojm,77,F,2021-07-07,Amount between Proxy and Source is different;
+zovi,73,J,2021-07-10,
+zoml,65,G,2021-07-31,Amount between Proxy and Source is different;
+zosj,56,I,2021-08-01,Transaction's date is out of range;

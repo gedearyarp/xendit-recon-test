@@ -2,15 +2,15 @@ Coding Technical Assessment: Data Reconciliation
 I Gede Arya Raditya Parameswara
 
 1. Date range for the report.
-30 June 2021 - 10 July 2021
+Reconcile transaction data for the month of July 2022 (1 July 2022 - 31 July 2022)
 
 2. Number of source records processed.
 There is 10 source records compared with 9 proxy records.
 
 3. Numbers and types of discrepancies.
-There is 5 type of remarks/discrepancies:
-1. PROXY_NOT_FOUND  : "Data not found in Proxy (Only occured in Source);"
-2. SOURCE_NOT_FOUND : "Data not found in Source (Only occured in Proxy);"
-3. AMOUNT_DIFF      : "Amount between Proxy and Source is different;"
-4. DATE_DIFF        : "Date between Proxy and Source is different;"
-5. DESCR_DIFF       : "Description between Proxy and Source is different;"
+There is 5 type of discrepancies including
+1. Different Amount between proxy and source
+2. Different Date between proxy and source
+3. Different Description between proxy and source
+4. Transaction not found in source
+5. Transaction's date is out of range

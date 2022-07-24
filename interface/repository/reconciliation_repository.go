@@ -20,6 +20,7 @@ func (repo ReconciliationRepository) WriteReconciliation(fileName string, reconc
 	if err != nil {
 		return err
 	}
+
 	gocsv.MarshalFile(&reconciliations, file)
 	return nil
 }

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"os"
+	"time"
 
 	"github.com/gedearyarp/xendit-reconciliation/usecase"
 )
@@ -14,7 +15,7 @@ func NewReconciliationController(interactor usecase.ReconciliationInteractor) *R
 	return &ReconciliationController{interactor}
 }
 
-func (controller *ReconciliationController) ReconcilTransaction(proxyFileName string, sourceFileName string, reconciliationFileName string) error {
+func (controller *ReconciliationController) ReconcileTransaction(proxyFileName string, sourceFileName string, reconciliationFileName string, startDate string, endDate string) error {
 	if _, err := os.Stat(proxyFileName); err != nil {
 		return err
 	}
@@ -22,9 +23,19 @@ func (controller *ReconciliationController) ReconcilTransaction(proxyFileName st
 		return err
 	}
 
-	err := controller.reconciliationInteractor.ReconcilTransaction(proxyFileName, sourceFileName, reconciliationFileName)
+	parsedStartDate, err := time.Parse("2006-01-02", startDate)
 	if err != nil {
 		return err
 	}
+	parsedEndDate, err := time.Parse("2006-01-02", endDate)
+	if err != nil {
+		return err
+	}
+
+	err = controller.reconciliationInteractor.ReconcileTransaction(proxyFileName, sourceFileName, reconciliationFileName, parsedStartDate, parsedEndDate)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
