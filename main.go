@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/gedearyarp/xendit-reconciliation/infrastructure/file"
 	"github.com/gedearyarp/xendit-reconciliation/interface/controller"
 	"github.com/gedearyarp/xendit-reconciliation/interface/repository"
 	"github.com/gedearyarp/xendit-reconciliation/usecase"
@@ -20,8 +21,9 @@ const (
 )
 
 func getReconciliationController() controller.ReconciliationController {
-	transactionRepo := repository.NewTransactionRepository()
-	reconciliationRepo := repository.NewReconciliationRepository()
+	csvHandler := file.NewCSVHandler()
+	transactionRepo := repository.NewTransactionRepository(csvHandler)
+	reconciliationRepo := repository.NewReconciliationRepository(csvHandler)
 	reconciliationInteractor := usecase.NewReconciliationInteractor(reconciliationRepo, transactionRepo)
 	reconciliationController := controller.NewReconciliationController(reconciliationInteractor)
 	return *reconciliationController

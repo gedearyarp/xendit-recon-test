@@ -1,26 +1,19 @@
 package repository
 
 import (
-	"os"
-
 	"github.com/gedearyarp/xendit-reconciliation/domain"
-
-	"github.com/gocarina/gocsv"
 )
 
 type ReconciliationRepository struct {
+	csvHandler CSVHandler
 }
 
-func NewReconciliationRepository() ReconciliationRepository {
-	return ReconciliationRepository{}
+func NewReconciliationRepository(csvHandler CSVHandler) ReconciliationRepository {
+	return ReconciliationRepository{
+		csvHandler: csvHandler,
+	}
 }
 
 func (repo ReconciliationRepository) WriteReconciliation(fileName string, reconciliations []domain.Reconciliation) error {
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-
-	gocsv.MarshalFile(&reconciliations, file)
-	return nil
+	return repo.csvHandler.WriteCSVFile(fileName, &reconciliations)
 }
