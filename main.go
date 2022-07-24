@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	proxyFileName          = "file/proxy.csv"
-	sourceFileName         = "file/source.csv"
-	reconciliationFileName = "file/reconciliation.csv"
+	proxyFileName          = "file/transaction/proxy.csv"
+	sourceFileName         = "file/transaction/source.csv"
+	reconciliationFileName = "file/reconciliation/reconciliation.csv"
 )
 
 func getReconciliationController() controller.ReconciliationController {
