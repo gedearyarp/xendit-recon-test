@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.com/gedearyarp/xendit-recon-test/domain"
+	"github.com/gedearyarp/xendit-reconciliation/domain"
 )
 
 type ReconciliationInteractor struct {

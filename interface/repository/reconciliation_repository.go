@@ -3,7 +3,7 @@ package repository
 import (
 	"os"
 
-	"github.com/gedearyarp/xendit-recon-test/domain"
+	"github.com/gedearyarp/xendit-reconciliation/domain"
 
 	"github.com/gocarina/gocsv"
 )

@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/gedearyarp/xendit-recon-test/interface/controller"
-	"github.com/gedearyarp/xendit-recon-test/interface/repository"
-	"github.com/gedearyarp/xendit-recon-test/usecase"
+	"github.com/gedearyarp/xendit-reconciliation/interface/controller"
+	"github.com/gedearyarp/xendit-reconciliation/interface/repository"
+	"github.com/gedearyarp/xendit-reconciliation/usecase"
 )
 
 const (

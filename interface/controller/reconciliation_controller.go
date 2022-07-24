@@ -3,7 +3,7 @@ package controller
 import (
 	"os"
 
-	"github.com/gedearyarp/xendit-recon-test/usecase"
+	"github.com/gedearyarp/xendit-reconciliation/usecase"
 )
 
 type ReconciliationController struct {

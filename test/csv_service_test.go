@@ -1,8 +1,8 @@
 package test
 
 import (
-	m "github.com/gedearyarp/xendit-recon-test/model"
-	svc "github.com/gedearyarp/xendit-recon-test/service"
+	m "github.com/gedearyarp/xendit-reconciliation/model"
+	svc "github.com/gedearyarp/xendit-reconciliation/service"
 
 	"testing"
 

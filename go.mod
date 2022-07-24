@@ -1,4 +1,4 @@
-module github.com/gedearyarp/xendit-recon-test
+module github.com/gedearyarp/xendit-reconciliation
 
 go 1.18
 
