@@ -115,3 +115,31 @@ func TestReconciliationUsecase_TenTransaction(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, compareCsv("../test/file/test_ten_transaction/reconciliation.csv", "../test/file/test_ten_transaction/expected_reconciliation.csv"))
 }
+
+func TestReconciliationUsecase_ErrorReadProxy(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("../test/file/abcdefgh/proxy.csv", "../test/file/abcdefgh/source.csv", "../test/file/abcdefgh/reconciliation.csv", startDate, endDate)
+	assert.NotNil(t, err)
+}
+
+func TestReconciliationUsecase_ErrorReadSource(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("../test/file/test_ten_transaction/proxy.csv", "../test/file/abcdefgh/source.csv", "../test/file/abcdefgh/reconciliation.csv", startDate, endDate)
+	assert.NotNil(t, err)
+}
+
+func TestReconciliationUsecase_ErrorWriteReconciliation(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("../test/file/test_ten_transaction/proxy.csv", "../test/file/test_ten_transaction/source.csv", "../test/file/abcdefgh/reconciliation.csv", startDate, endDate)
+	assert.NotNil(t, err)
+}
+
+func TestReconciliationUsecase_ErrorConvertDate(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("../test/file/test_error/proxy.csv", "../test/file/test_error/source.csv", "../test/file/test_error/reconciliation.csv", startDate, endDate)
+	assert.NotNil(t, err)
+}
