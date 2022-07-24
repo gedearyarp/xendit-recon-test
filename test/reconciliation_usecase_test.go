@@ -15,9 +15,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	startDate = "2021-07-01"
-	endDate   = "2021-07-31"
+var (
+	startDate = time.Date(2021, time.Month(7), 1, 0, 0, 0, 0, time.UTC)
+	endDate   = time.Date(2021, time.Month(7), 31, 0, 0, 0, 0, time.UTC)
 )
 
 func compareCsv(fileName1 string, fileName2 string) bool {
@@ -53,14 +53,66 @@ func getReconciliationInteractor() usecase.ReconciliationInteractor {
 	return reconciliationInteractor
 }
 
-func TestReconService_AmountDifferent(t *testing.T) {
+func TestReconciliationUsecase_AmountDifferent(t *testing.T) {
 	reconciliationInteractor := getReconciliationInteractor()
-	parsedStartDate, err := time.Parse("2006-01-02", startDate)
-	assert.Nil(t, err)
-	parsedEndDate, err := time.Parse("2006-01-02", endDate)
-	assert.Nil(t, err)
 
-	reconciledData := reconciliationInteractor.ReconcileTransaction("file/test_amount_different/proxy.csv", "file/test_amount_different/source.csv", "file/test_amount_different/reconciliation.csv", parsedStartDate, parsedEndDate)
-	assert.NotNil(t, reconciledData)
-	assert.True(t, compareCsv("file/test_amount_different/reconciliation.csv", "file/test_amount_different/expected_reconciliation.csv"))
+	err := reconciliationInteractor.ReconcileTransaction("file/test_amount_diff/proxy.csv", "file/test_amount_diff/source.csv", "file/test_amount_diff/reconciliation.csv", startDate, endDate)
+	assert.Nil(t, err)
+	assert.True(t, compareCsv("file/test_amount_diff/reconciliation.csv", "file/test_amount_diff/expected_reconciliation.csv"))
+}
+
+func TestReconciliationUsecase_DateDifferent(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("file/test_date_diff/proxy.csv", "file/test_date_diff/source.csv", "file/test_date_diff/reconciliation.csv", startDate, endDate)
+	assert.Nil(t, err)
+	assert.True(t, compareCsv("file/test_date_diff/reconciliation.csv", "file/test_date_diff/expected_reconciliation.csv"))
+}
+
+func TestReconciliationUsecase_DescrDifferent(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("file/test_descr_diff/proxy.csv", "file/test_descr_diff/source.csv", "file/test_descr_diff/reconciliation.csv", startDate, endDate)
+	assert.Nil(t, err)
+	assert.True(t, compareCsv("file/test_descr_diff/reconciliation.csv", "file/test_descr_diff/expected_reconciliation.csv"))
+}
+
+func TestReconciliationUsecase_DateOutOfRange(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("file/test_date_out_of_range/proxy.csv", "file/test_date_out_of_range/source.csv", "file/test_date_out_of_range/reconciliation.csv", startDate, endDate)
+	assert.Nil(t, err)
+	assert.True(t, compareCsv("file/test_date_out_of_range/reconciliation.csv", "file/test_date_out_of_range/expected_reconciliation.csv"))
+}
+
+func TestReconciliationUsecase_SourceNotFound(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("file/test_source_not_found/proxy.csv", "file/test_source_not_found/source.csv", "file/test_source_not_found/reconciliation.csv", startDate, endDate)
+	assert.Nil(t, err)
+	assert.True(t, compareCsv("file/test_source_not_found/reconciliation.csv", "file/test_source_not_found/expected_reconciliation.csv"))
+}
+
+func TestReconciliationUsecase_Perfect(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("file/test_perfect/proxy.csv", "file/test_perfect/source.csv", "file/test_perfect/reconciliation.csv", startDate, endDate)
+	assert.Nil(t, err)
+	assert.True(t, compareCsv("file/test_perfect/reconciliation.csv", "file/test_perfect/expected_reconciliation.csv"))
+}
+
+func TestReconciliationUsecase_DoubleRemark(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("file/test_double_remark/proxy.csv", "file/test_double_remark/source.csv", "file/test_double_remark/reconciliation.csv", startDate, endDate)
+	assert.Nil(t, err)
+	assert.True(t, compareCsv("file/test_double_remark/reconciliation.csv", "file/test_double_remark/expected_reconciliation.csv"))
+}
+
+func TestReconciliationUsecase_TenTransaction(t *testing.T) {
+	reconciliationInteractor := getReconciliationInteractor()
+
+	err := reconciliationInteractor.ReconcileTransaction("file/test_double_remark/proxy.csv", "file/test_double_remark/source.csv", "file/test_double_remark/reconciliation.csv", startDate, endDate)
+	assert.Nil(t, err)
+	assert.True(t, compareCsv("file/test_double_remark/reconciliation.csv", "file/test_double_remark/expected_reconciliation.csv"))
 }

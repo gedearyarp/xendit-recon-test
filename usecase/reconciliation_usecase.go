@@ -130,7 +130,7 @@ func (interactor *ReconciliationInteractor) generateReconciliation(source domain
 
 func (interactor *ReconciliationInteractor) sortReconciliationByDate(reconciliations []domain.Reconciliation) []domain.Reconciliation {
 	sort.Slice(reconciliations, func(i int, j int) bool {
-		return reconciliations[i].Date < reconciliations[j].Date
+		return reconciliations[i].ID < reconciliations[j].ID
 	})
 	return reconciliations
 }
