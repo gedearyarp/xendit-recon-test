@@ -1,0 +1,4 @@
+Reconciliation Summary Report (1 July 2021 - 31 July 2021)
+
+There is 0 source records processed.
+In total 1 discrepancies with 5 different type of discrepancy: 

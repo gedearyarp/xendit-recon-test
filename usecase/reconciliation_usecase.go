@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"sort"
 	t "time"
 
@@ -8,14 +9,16 @@ import (
 )
 
 type ReconciliationInteractor struct {
-	reconciliationRepository domain.ReconciliationRepository
-	transactionRepository    domain.TransactionRepository
+	reconciliationRepository        domain.ReconciliationRepository
+	transactionRepository           domain.TransactionRepository
+	reconciliationSummaryRepository domain.ReconciliationSummaryRepository
 }
 
-func NewReconciliationInteractor(reconciliationRepository domain.ReconciliationRepository, transactionRepository domain.TransactionRepository) ReconciliationInteractor {
+func NewReconciliationInteractor(reconciliationRepository domain.ReconciliationRepository, transactionRepository domain.TransactionRepository, reconciliationSummaryRepository domain.ReconciliationSummaryRepository) ReconciliationInteractor {
 	return ReconciliationInteractor{
-		reconciliationRepository: reconciliationRepository,
-		transactionRepository:    transactionRepository,
+		reconciliationRepository:        reconciliationRepository,
+		transactionRepository:           transactionRepository,
+		reconciliationSummaryRepository: reconciliationSummaryRepository,
 	}
 }
 
@@ -27,7 +30,7 @@ const (
 	DATE_OUT_OF_RANGE = "Transaction's date is out of range;"
 )
 
-func (interactor *ReconciliationInteractor) ReconcileTransaction(proxyFileName string, sourceFileName string, reconciliationFileName string, startDate t.Time, endDate t.Time) error {
+func (interactor *ReconciliationInteractor) ReconcileTransaction(proxyFileName string, sourceFileName string, reconciliationFileName string, summaryReportFileName string, startDate t.Time, endDate t.Time) error {
 	proxies, err := interactor.transactionRepository.ReadTransaction(proxyFileName)
 	if err != nil {
 		return err
@@ -40,14 +43,19 @@ func (interactor *ReconciliationInteractor) ReconcileTransaction(proxyFileName s
 	mapProxies := interactor.mapTransactionById(proxies)
 	mapSources := interactor.mapTransactionById(sources)
 
-	reconciliations, err := interactor.compareTransaction(mapProxies, mapSources, startDate, endDate)
+	reconciliations, totalDiscrepancies, err := interactor.compareTransaction(mapProxies, mapSources, startDate, endDate)
 	if err != nil {
 		return err
 	}
 
-	reconciliations = interactor.sortReconciliationByDate(reconciliations)
+	reconciliations = interactor.sortReconciliationById(reconciliations)
+	reconciliationSummary := interactor.generateReconciliationSummary(startDate, endDate, int64(len(sources)), totalDiscrepancies)
 
 	err = interactor.reconciliationRepository.WriteReconciliation(reconciliationFileName, reconciliations)
+	if err != nil {
+		return err
+	}
+	err = interactor.reconciliationSummaryRepository.WriteSummaryReport(summaryReportFileName, reconciliationSummary)
 	if err != nil {
 		return err
 	}
@@ -65,15 +73,18 @@ func (interactor *ReconciliationInteractor) mapTransactionById(transactions []do
 	return mapTransactions
 }
 
-func (interactor *ReconciliationInteractor) compareTransaction(mapProxies map[string]domain.Transaction, mapSources map[string]domain.Transaction, startDate t.Time, endDate t.Time) ([]domain.Reconciliation, error) {
-	var result []domain.Reconciliation
+func (interactor *ReconciliationInteractor) compareTransaction(mapProxies map[string]domain.Transaction, mapSources map[string]domain.Transaction, startDate t.Time, endDate t.Time) ([]domain.Reconciliation, int64, error) {
+	var (
+		result             []domain.Reconciliation
+		totalDiscrepancies int64
+	)
 
 	for id, proxy := range mapProxies {
 		var remarks string
 
 		remarks, err := interactor.remarkDateOutOfRange(remarks, proxy.Date, startDate, endDate)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		source, ok := mapSources[id]
@@ -84,9 +95,12 @@ func (interactor *ReconciliationInteractor) compareTransaction(mapProxies map[st
 		}
 
 		result = append(result, interactor.generateReconciliation(proxy, remarks))
+		if remarks != "" {
+			totalDiscrepancies++
+		}
 	}
 
-	return result, nil
+	return result, totalDiscrepancies, nil
 }
 
 func (interactor *ReconciliationInteractor) remarkSourceNotFound(currentRemark string) string {
@@ -128,7 +142,20 @@ func (interactor *ReconciliationInteractor) generateReconciliation(source domain
 	}
 }
 
-func (interactor *ReconciliationInteractor) sortReconciliationByDate(reconciliations []domain.Reconciliation) []domain.Reconciliation {
+func (interactor *ReconciliationInteractor) generateReconciliationSummary(startDate t.Time, endDate t.Time, lenSource int64, totalDiscrepancies int64) domain.ReconciliationSummary {
+	return domain.ReconciliationSummary{
+		StartDate:           interactor.convertTimeToString(startDate),
+		EndDate:             interactor.convertTimeToString(endDate),
+		SourceDataProcessed: lenSource,
+		TotalDiscrepancies:  totalDiscrepancies,
+	}
+}
+
+func (interactor *ReconciliationInteractor) convertTimeToString(dateTime t.Time) string {
+	return fmt.Sprint(dateTime.Day(), " ", dateTime.Month(), " ", dateTime.Year())
+}
+
+func (interactor *ReconciliationInteractor) sortReconciliationById(reconciliations []domain.Reconciliation) []domain.Reconciliation {
 	sort.Slice(reconciliations, func(i int, j int) bool {
 		return reconciliations[i].ID < reconciliations[j].ID
 	})
