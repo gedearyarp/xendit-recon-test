@@ -61,10 +61,10 @@ func readInputRangeDate() (string, string) {
 		endDate   string
 	)
 
-	fmt.Print("Enter start date (ex. 2021-07-01): ")
+	fmt.Print("Enter start date (YYYY-MM-DD): ")
 	fmt.Scanln(&startDate)
 
-	fmt.Print("Enter end date (ex. 2021-07-31): ")
+	fmt.Print("Enter end date (YYYY-MM-DD): ")
 	fmt.Scanln(&endDate)
 	return startDate, endDate
 }
@@ -72,8 +72,8 @@ func readInputRangeDate() (string, string) {
 func main() {
 	reconciliationController := getReconciliationController()
 
-	// proxyFileName, sourceFileName, reconciliationFileName, summaryReportFileName := readInputFileName()
-	// startDate, endDate := readInputRangeDate()
+	proxyFileName, sourceFileName, reconciliationFileName, summaryReportFileName := readInputFileName()
+	startDate, endDate := readInputRangeDate()
 
 	err := reconciliationController.ReconcileTransaction(proxyFileName, sourceFileName, reconciliationFileName, summaryReportFileName, startDate, endDate)
 	if err != nil {
