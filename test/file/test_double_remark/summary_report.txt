@@ -1,4 +1,7 @@
 Reconciliation Summary Report (1 July 2021 - 31 July 2021)
 
-There is 1 source records processed.
-In total 1 discrepancies with 5 different type of discrepancy: 
+There are 1 source records processed.
+
+In total, there are 1 invalid proxies with 2 discrepancies, concluded in a 2 types of discrepancies: 
+1 Amount between Proxy and Source is different;
+1 Description between Proxy and Source is different;

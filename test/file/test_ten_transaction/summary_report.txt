@@ -1,4 +1,8 @@
 Reconciliation Summary Report (1 July 2021 - 31 July 2021)
 
-There is 9 source records processed.
-In total 6 discrepancies with 5 different type of discrepancy: 
+There are 9 source records processed.
+
+In total, there are 6 invalid proxies with 6 discrepancies, concluded in a 3 types of discrepancies: 
+2 Amount between Proxy and Source is different;
+1 Transaction not found in Source (Only occured in Proxy);
+3 Transaction's date is out of range;

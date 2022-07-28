@@ -72,8 +72,8 @@ func readInputRangeDate() (string, string) {
 func main() {
 	reconciliationController := getReconciliationController()
 
-	proxyFileName, sourceFileName, reconciliationFileName, summaryReportFileName := readInputFileName()
-	startDate, endDate := readInputRangeDate()
+	// proxyFileName, sourceFileName, reconciliationFileName, summaryReportFileName := readInputFileName()
+	// startDate, endDate := readInputRangeDate()
 
 	err := reconciliationController.ReconcileTransaction(proxyFileName, sourceFileName, reconciliationFileName, summaryReportFileName, startDate, endDate)
 	if err != nil {
